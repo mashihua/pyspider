@@ -18,11 +18,14 @@ WORKDIR "/opt/node"
 RUN apt-get -qq update && apt-get -qq install -y curl ca-certificates libx11-xcb1 libxtst6 libnss3 libasound2 libatk-bridge2.0-0 libgtk-3-0 --no-install-recommends && \
     curl -sL https://nodejs.org/dist/v${NODEJS_VERSION}/node-v${NODEJS_VERSION}-linux-x64.tar.gz | tar xz --strip-components=1 && \
     rm -rf /var/lib/apt/lists/*
-RUN npm install puppeteer express
+RUN npm install puppeteer@2.0.0 express@4.17.0
 
 # install requirements
 COPY requirements.txt /opt/pyspider/requirements.txt
 RUN pip install -r /opt/pyspider/requirements.txt
+
+# add python path
+RUN echo "/volume/python3.6" >> /usr/local/lib/python3.6/site-packages/.pth
 
 # add all repo
 ADD ./ /opt/pyspider
@@ -34,7 +37,8 @@ RUN pip install -e .[all]
 # Create a symbolic link to node_modules
 RUN ln -s /opt/node/node_modules ./node_modules
 
-#VOLUME ["/opt/pyspider"]
+VOLUME ["/volume/python3.6"]
+
 ENTRYPOINT ["pyspider"]
 
 EXPOSE 5000 23333 24444 25555 22222
