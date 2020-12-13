@@ -193,6 +193,12 @@ if (system.args.length !== 2) {
         });
       }
 
+      if (!script_executed && fetch.js_script) {
+        script_executed = true;
+        console.log('running wait-end script.');
+        script_result = page.evaluateJavaScript(fetch.js_script);
+      }
+      
       return {
         orig_url: fetch.url,
         status_code: first_response.status || 599,
